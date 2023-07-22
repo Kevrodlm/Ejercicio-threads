@@ -1,0 +1,110 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+
+typedef std::vector<std::vector<int>> Matrix;
+
+Matrix generateRandomMatrix(int rows, int cols) {
+    Matrix matrix(rows, std::vector<int>(cols));
+    srand(time(0));
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matrix[i][j] = rand() % 2001 - 1000;
+        }
+    }
+    return matrix;
+}
+
+Matrix getTransposedMatrix(const Matrix& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+    Matrix transposedMatrix(cols, std::vector<int>(rows));
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            transposedMatrix[j][i] = matrix[i][j];
+        }
+    }
+    return transposedMatrix;
+}
+
+Matrix getZeroDiagonalMatrix(const Matrix& matrix) {
+    Matrix zeroDiagonalMatrix = matrix;
+    for (int i = 0; i < matrix.size(); i++) {
+        zeroDiagonalMatrix[i][i] = 0;
+    }
+    return zeroDiagonalMatrix;
+}
+
+int getMaxNumber(const Matrix& matrix) {
+    int maxNumber = matrix[0][0];
+    for (const auto& row : matrix) {
+        int maxInRow = *max_element(row.begin(), row.end());
+        maxNumber = std::max(maxNumber, maxInRow);
+    }
+    return maxNumber;
+}
+
+int getMinNumber(const Matrix& matrix) {
+    int minNumber = matrix[0][0];
+    for (const auto& row : matrix) {
+        int minInRow = *min_element(row.begin(), row.end());
+        minNumber = std::min(minNumber, minInRow);
+    }
+    return minNumber;
+}
+
+int getMostFrequentNumber(const Matrix& matrix) {
+    std::map<int, int> frequency;
+    for (const auto& row : matrix) {
+        for (int num : row) {
+            frequency[num]++;
+        }
+    }
+    return std::max_element(frequency.begin(), frequency.end(),
+        [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+            return a.second < b.second;
+    })->first;
+}
+
+Matrix getMultiplesOfFiveMultiplied(const Matrix& matrix) {
+    Matrix newMatrix = matrix;
+    for (auto& row : newMatrix) {
+        for (int& num : row) {
+            if (num % 5 == 0) {
+                num *= 1000;
+            }
+        }
+    }
+    return newMatrix;
+}
+
+void printMatrix(const Matrix& matrix) {
+    for (const auto& row : matrix) {
+        for (const auto& num : row) {
+            std::cout << num << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+int main() {
+    const int dimension = 500;
+    Matrix matrix = generateRandomMatrix(dimension, dimension);
+
+    Matrix transposedMatrix = getTransposedMatrix(matrix);
+    Matrix zeroDiagonalMatrix = getZeroDiagonalMatrix(matrix);
+    int maxNumber = getMaxNumber(matrix);
+    std::cout << "Numero maximo: " << maxNumber << "\n";
+
+    int minNumber = getMinNumber(matrix);
+    std::cout << "Numero minimo: " << minNumber << "\n";
+
+    int mostFrequentNumber = getMostFrequentNumber(matrix);
+    std::cout << "Numero que mas se repite: " << mostFrequentNumber << "\n";
+
+    Matrix multipliedMatrix = getMultiplesOfFiveMultiplied(matrix);
+    return 0;
+}
