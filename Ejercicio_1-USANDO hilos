@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+
+void calculateStats(const std::vector<int>& data, double& promedio, int& maxNum, int& minNum,
+    int& mostFrecuenteNum, int& multiplosde5) {
+
+    // Calcular promedio
+    double sum = 0;
+    for (int num : data) {
+        sum += num;
+    }
+    promedio = sum / data.size();
+
+    // Calcular número máximo y mínimo
+    maxNum = *std::max_element(data.begin(), data.end());
+    minNum = *std::min_element(data.begin(), data.end());
+
+    // Calcular número que más se repite
+    mostFrecuenteNum = 0;
+    int maxFrecuencia = 0;
+    for (int num : data) {
+        int frecuencia = std::count(data.begin(), data.end(), num);
+        if (frecuencia > maxFrecuencia) {
+            maxFrecuencia = frecuencia;
+            mostFrecuenteNum = num;
+        }
+    }
+
+    // Calcular múltiplos de 5
+    multiplosde5 = std::count_if(data.begin(), data.end(), [](int num) {
+        return num % 5 == 0;
+        });
+}
+
+int main() {
+    const int vectorSize = 1000;
+    std::vector<int> myVector(vectorSize);
+
+    // Llenar el vector con valores aleatorios entre -10000 y 10000
+    srand(static_cast<unsigned>(time(0)));
+    for (int i = 0; i < vectorSize; ++i) {
+        myVector[i] = rand() % 20001 - 10000;
+    }
+
+    // Crear los hilos para calcular las estadísticas en paralelo
+    double promedio;
+    int maxNum, minNum, mostFrecuenteNum, multiplosde5;
+    std::thread t(calculateStats, std::ref(myVector), std::ref(promedio), std::ref(maxNum),
+        std::ref(minNum), std::ref(mostFrecuenteNum), std::ref(multiplosde5));
+
+    // Esperar a que termine el hilo
+    t.join();
+
+    // Imprimir resultados
+    std::cout << "Resultados con hilos:" << std::endl;
+    std::cout << "Promedio: " << promedio << std::endl;
+    std::cout << "Máximo: " << maxNum << std::endl;
+    std::cout << "Mínimo: " << minNum << std::endl;
+    std::cout << "Número que más se repite: " << mostFrecuenteNum << std::endl;
+    std::cout << "Múltiplos de 5: " << multiplosde5 << std::endl;
+    return 0;
+}
