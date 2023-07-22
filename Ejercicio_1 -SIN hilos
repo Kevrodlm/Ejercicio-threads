@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <algorithm>
+#include <chrono>
+
+//Crear un programa que cree un vector de 1000 elementos , los llene aleatoriamente con valores entre - 10000 y 10000 y después desarrolle lo siguiente :
+
+//Sin usar hilos, ose la biblioteca std::thread, crear un programa que calcule el promedio, el número máximo, el número mínimo, el número que más se repite y 
+// cuántos múltiplos de 5 hay dentro del vector.
+
+//Usando hilos, ose la biblioteca std::thread, crear un programa que calcule el promedio, el número máximo, el número mínimo, el número que más se repite y 
+// cuántos múltiplos de 5 hay dentro del vector.
+
+//En ambos casos usar la biblioteca std::chrono para medir cual es tiempo promedio de ejecución de ambos programas.
+
+//Hacer comparaciones de ejecución usando como referencia el número de thread lanzados para ejecutar las diversas tareas en paralelo.
+int main() {
+    //const int vectorSize = 1000;
+    std::vector<int> paquete(1000);
+
+    // Llenar el vector con valores aleatorios entre -10000 y 10000
+    srand(static_cast<unsigned>(time(0)));
+    for (int i = 0; i < 1000; ++i) {
+        paquete[i] = rand() % 20001 - 10000;
+    }
+
+    // Calcular promedio
+    double sum = 0;
+    for (int num : paquete) {
+        sum += num;
+    }
+    double promedio = sum / 1000;
+
+    // Calcular número máximo y mínimo
+    int maxNum = *std::max_element(paquete.begin(), paquete.end());
+    int minNum = *std::min_element(paquete.begin(), paquete.end());
+
+    // Calcular número que más se repite
+    int mostFrecuenteNum = 0, maxFrequencia = 0;
+    for (int num : paquete) {
+        int frecuencia = std::count(paquete.begin(), paquete.end(), num);
+        if (frecuencia > maxFrequencia) {
+            maxFrequencia = frecuencia;
+            mostFrecuenteNum = num;
+        }
+    }
+
+    // Calcular múltiplos de 5
+    int multiplesOf5 = std::count_if(paquete.begin(), paquete.end(), [](int num) {
+        return num % 5 == 0;
+        });
+
+    // Imprimir resultados
+    std::cout << "Resultados sin hilos:" << std::endl;
+    std::cout << "Promedio: " << promedio << std::endl;
+    std::cout << "Maximo: " << maxNum << std::endl;
+    std::cout << "Minimo: " << minNum << std::endl;
+    std::cout << "Numero que más se repite: " << mostFrecuenteNum << std::endl;
+    std::cout << "Multiplos de 5: " << multiplesOf5 << std::endl;
+
+    return 0;
+}
